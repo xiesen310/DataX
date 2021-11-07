@@ -14,6 +14,7 @@ from optparse import OptionGroup
 from string import Template
 import codecs
 import platform
+from datetime import date, timedelta
 
 def isWindows():
     return platform.system() == 'Windows'
@@ -187,13 +188,16 @@ def buildStartCommand(options, args):
     if options.params:
         jobParams = jobParams + " " + options.params
 
+    jobParams = jobParams + " " + "-Dtoday=" + date.today().strftime("%Y%m%d")
+    jobParams = jobParams + " " + "-Dyesterday=" + (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
+
     if options.jobid:
         commandMap["jobid"] = options.jobid
 
     commandMap["jvm"] = tempJVMCommand
     commandMap["params"] = jobParams
     commandMap["job"] = jobResource
-
+    print(Template(ENGINE_COMMAND).substitute(**commandMap))
     return Template(ENGINE_COMMAND).substitute(**commandMap)
 
 
