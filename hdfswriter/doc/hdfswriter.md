@@ -217,7 +217,7 @@ HdfsWriter提供向HDFS文件系统指定路径中写入TEXTFile文件和ORCFile
                             },
                             {
                                 "name": "age",
-                                "type": "long"
+                                "type": "INT"
                             }
                  ]
 		```
