@@ -1,0 +1,60 @@
+stages:
+  - sonar_push
+  - sonar_scan
+  - maven_clean
+  - build_release
+
+
+before_script:
+  - 'echo "Build fold : $PWD"'
+  - 'echo "PROJECT NAME : $CI_PROJECT_NAME"'
+  - 'echo "PROJECT ID : $CI_PROJECT_ID"'
+  - 'echo "PROJECT URL : $CI_PROJECT_URL"'
+  - 'echo "ENVIRONMENT URL : $CI_ENVIRONMENT_URL"'
+  - 'export COMMIT_ID_SHORT=${CI_COMMIT_SHA:0:8}'
+  - 'export PATH=$PATH:/usr/bin'
+
+sonar_push:
+  stage: sonar_push
+  only:
+    - master
+  when: manual
+  image: hub.zorkdata.com/devops/sonar_runner:00be5a71
+  allow_failure: true
+  script:
+    - FOLD_LIST=`bash /cicd-script/sonarqube/get_fold_list.sh "src"`
+    - 'bash /cicd-script/sonar_push.sh "-Dsonar.sources=`echo $FOLD_LIST`"'
+
+sonar_scan:
+  stage: sonar_scan
+  only:
+    - merge_requests
+    - branches
+    - master
+  when: always
+  image: hub.zorkdata.com/devops/sonar_runner:00be5a71
+  allow_failure: false
+  script:
+    - FOLD_LIST=`bash /cicd-script/sonarqube/get_fold_list.sh "src"`
+    - 'bash /cicd-script/sonar_review.sh "-Dsonar.sources=`echo $FOLD_LIST`"'
+
+
+maven_clean:
+  stage: maven_clean
+  when: always
+  image: hub.zorkdata.com/devops/maven3.6-jdk1.8:9b09951e
+  allow_failure: true
+  script:
+    - 'bash /cicd-script/maven/maven_clean.sh'
+
+build_release:
+  stage: build_release
+  only:
+    - tags
+  when: always
+  image: hub.zorkdata.com/devops/maven3.6-jdk1.8:9b09951e
+  allow_failure: false
+  script:
+    - 'bash /cicd-script/maven/maven_clean.sh'
+    - 'bash /cicd-script/maven/maven_deploy_datax.sh'
+    - 'bash /cicd-script/maven/tag_release.sh datax'
