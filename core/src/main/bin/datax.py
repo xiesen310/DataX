@@ -191,6 +191,10 @@ def buildStartCommand(options, args):
     jobParams = jobParams + " " + "-Dtoday=" + date.today().strftime("%Y%m%d")
     jobParams = jobParams + " " + "-Dyesterday=" + (date.today() + timedelta(days=-1)).strftime("%Y%m%d")
 
+    # 添加系统变量 indexToday 和 indexYesterday
+    jobParams = jobParams + " " + "-DindexToday=" + date.today().strftime("%Y.%m.%d")
+    jobParams = jobParams + " " + "-DindexYesterday=" + (date.today() + timedelta(days=-1)).strftime("%Y.%m.%d")
+
     if options.jobid:
         commandMap["jobid"] = options.jobid
 
