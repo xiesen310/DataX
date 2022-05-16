@@ -1,0 +1,6 @@
+{
+    "name": "elasticsearchreader",
+    "class": "com.alibaba.datax.plugin.reader.elasticsearchreader.EsReader",
+    "description": "适用于:生产环境.  原理: 使用elasticsearch的rest api接口， 批量读取elasticsearch的数据",
+    "developer": "xiesen"
+}

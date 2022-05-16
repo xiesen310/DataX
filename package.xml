@@ -42,6 +42,14 @@
         </fileSet>
 
         <fileSet>
+            <directory>elasticsearchreader/target/datax/</directory>
+            <includes>
+                <include>**/*.*</include>
+            </includes>
+            <outputDirectory>datax</outputDirectory>
+        </fileSet>
+
+        <fileSet>
             <directory>oceanbasev10reader/target/datax/</directory>
             <includes>
                 <include>**/*.*</include>
