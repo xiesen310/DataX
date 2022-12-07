@@ -123,6 +123,9 @@
         <module>hbase20xsqlreader</module>
         <module>hbase20xsqlwriter</module>
         <module>kuduwriter</module>
+        <module>influxdbreader</module>
+        <module>influxdbwriter</module>
+        <module>kafkawriter</module>
     </modules>
 
     <dependencyManagement>
