@@ -49,7 +49,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>package.xml</descriptor>
+                        <descriptor>src/main/assembly/package.xml</descriptor>
                     </descriptors>
                     <finalName>datax</finalName>
                 </configuration>
