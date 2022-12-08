@@ -22,59 +22,88 @@ influx --execute "CREATE DATABASE datax"
 
 ```json
 {
-  "job": {
-    "setting": {
-      "speed": {
-        "channel": 1,
-        "bytes": -1
+  "core":{
+    "transport":{
+      "channel":{
+        "speed":{
+          "byte":1048576
+        }
+      }
+    }
+  },
+  "job":{
+    "setting":{
+      "speed":{
+        "channel":3,
+        "byte":1048576
+      },
+      "errorLimit":{
+        "record":0,
+        "percentage":0.02
       }
     },
-    "content": [
+    "content":[
       {
-        "reader": {
-          "name": "streamreader",
-          "parameter": {
-            "column": [
-              {
-                "random":"2001-01-01 00:00:00, 2016-07-07 23:59:59",
-                "type":"date"
-              },
-              {
-                "random": "1,1000",
-                "type": "long"
-              },
-              {
-                "random": "1,10",
-                "type": "string"
-              },
-              {
-                "random": "1000,50000",
-                "type": "double"
-              }
+        "reader":{
+          "name":"sqlserverreader",
+          "parameter":{
+            "username":"sa",
+            "password":"zorkdata.8888",
+            "column":[
+              "GETDATE() as time",
+              "[id]",
+              "[trading_day] as day"
             ],
-            "sliceRecordCount": 10
+            "querySql": ["select trading_day,id,trading_day as day from dbo.trading_calendar"],
+            "splitPk":"",
+            "connection":[
+              {
+                "table":[
+                  "dbo.trading_calendar"
+                ],
+                "jdbcUrl":[
+                  "jdbc:sqlserver://192.168.3.22:1433;DatabaseName=capacity"
+                ]
+              }
+            ]
           }
         },
-        "writer": {
-          "name": "influxdbwriter",
-          "parameter": {
-            "connection": [
+        "writer":{
+          "name":"influxdbwriter",
+          "parameter":{
+            "connection":[
               {
-                "endpoint": "http://localhost:8086",
-                "database": "datax",
-                "table": "datax_tbl"
+                "endpoint":"http://192.168.3.23:8086",
+                "database":"dwd_all_metric",
+                "table":"data_test_1"
               }
             ],
-            "username": "influx",
-            "password": "influx123",
-            "column": [
-              {"name":"time", "type":"timestamp","isTag": false},
-              {"name":"user_id","type":"int","isTag": false},
-              {"name":"user_name", "type":"string","isTag": true},
-              {"name":"salary", "type":"double","isTag": false}
+            "username":"admin",
+            "password":"admin",
+            "column":[
+              {
+                "name":"time",
+                "type":"timestamp",
+                "isTag":false
+              },
+              {
+                "name":"id",
+                "type":"DOUBLE",
+                "isTag":false
+              },
+              {
+                "name":"day",
+                "type":"String",
+                "isTag":true
+              }
             ],
-            "preSql": ["delete from datax_tbl"],
-            "batchSize": 1024
+            "preSql":[
+              "select * from data_test_1"
+            ],
+            "postSql":[
+              "select * from data_test_1"
+            ],
+            "batch_size":1
           }
         }
       }

@@ -20,15 +20,24 @@ InfluxDbReader 实现了从 influxDB 读取数据。在底层实现上使用infl
 
 * influxDB 2 stream
 ```json
-{
+ {
+  "core":{
+    "transport":{
+      "channel":{
+        "speed":{
+          "byte":1048576
+        }
+      }
+    }
+  },
   "job": {
     "setting": {
       "speed": {
         "channel": 5
       },
       "errorLimit": {
-        "record": 0,
-        "percentage": 0.02
+        "record": 500,
+        "percentage": 0.05
       }
     },
     "content": [
@@ -36,28 +45,20 @@ InfluxDbReader 实现了从 influxDB 读取数据。在底层实现上使用infl
         "reader": {
           "name": "influxdbreader",
           "parameter": {
-            "endpoint": "http://192.168.142.135:8086",
-            "username": "csb",
-            "password": "123456",
-            "database": "csb",
-            "measurement": "SwDevice-Data",
+            "endpoint": "http://192.168.3.23:8086",
+            "username": "admin",
+            "password": "admin",
+            "database": "dwd_all_metric",
+            "measurement": "cpu_system_mb",
             "column": [
-              "__uid__",
               "__time__",
-              "SN",
-              "CCID",
-              "ssyy",
-              "status",
-              "errHw",
-              "errSw",
-              "temperature",
-              "humidity",
-              "voltage",
-              "battery"
+              "cores",
+              "user_pct",
+              "hostname"
             ],
             "splitIntervalS": 60000000,
-            "beginDateTime": "2020-01-01 00:00:00",
-            "endDateTime": "2021-01-01 00:00:00"
+            "beginDateTime": "2022-12-08 13:00:00",
+            "endDateTime": "2022-12-08 13:30:00"
           }
         },
         "writer": {
