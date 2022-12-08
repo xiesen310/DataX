@@ -7,17 +7,16 @@ import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.plugin.RecordReceiver;
 import com.alibaba.datax.common.plugin.TaskPluginCollector;
 import com.alibaba.datax.common.util.Configuration;
+import org.apache.commons.lang3.time.DateUtils;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Query;
-import org.influxdb.dto.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -75,10 +74,10 @@ public class InfluxDBWriterTask {
     }
 
     public void startWrite(RecordReceiver recordReceiver, TaskPluginCollector taskPluginCollector) {
-        influxDB.enableBatch(batchSize, 100, TimeUnit.MILLISECONDS);
         // Retention policy
         String rp = "autogen";
         Record record = null;
+        List<Point> points = new ArrayList<>();
         try {
             while ((record = recordReceiver.getFromReader()) != null) {
                 if (record.getColumnNumber() != this.columnNumber) {
@@ -94,7 +93,9 @@ public class InfluxDBWriterTask {
                 Map<String, Object> fields = new HashMap<>();
                 Map<String, String> tags = new HashMap<>();
                 // 第一个字符必须是时间戳类型
-                builder.time(record.getColumn(0).asLong(), TimeUnit.MILLISECONDS);
+                String time = record.getColumn(0).asString();
+                Date date = DateUtils.parseDateStrictly(time, Key.DatePattern);
+                builder.time(date.getTime(), TimeUnit.MILLISECONDS);
                 for (int i = 1; i < columnNumber; i++) {
                     String name = this.columns.get(i).getString("name");
                     String type = this.columns.get(i).getString("type").toUpperCase();
@@ -129,8 +130,9 @@ public class InfluxDBWriterTask {
                 }
                 builder.fields(fields);
                 builder.tag(tags);
-                influxDB.write(database, rp, builder.build());
+                points.add(builder.build());
             }
+            influxDB.write(BatchPoints.database(database).points().points(points).build());
         } catch (Exception e) {
             taskPluginCollector.collectDirtyRecord(record, e);
             throw DataXException.asDataXException(InfluxDBWriterErrorCode.ILLEGAL_VALUE, e);
