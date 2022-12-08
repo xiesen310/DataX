@@ -215,8 +215,8 @@ public class InfluxDBReader extends Reader {
             sql.append(" from \"" + measurement + "\" where 1=1");
 
             SimpleDateFormat format = new SimpleDateFormat(Constant.DEFAULT_DATA_FORMAT);
-            sql.append(" and time>='" + format.format(new Date(beginDate)) + "'");
-            sql.append(" and time<='" + format.format(new Date(endDate)) + "'");
+            sql.append(" and time>= " + beginDate + "ms");
+            sql.append(" and time<= " + endDate + "ms");
             // TODO where
 
             return String.valueOf(sql);
