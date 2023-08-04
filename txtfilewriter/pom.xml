@@ -28,6 +28,12 @@
 			<groupId>com.alibaba.datax</groupId>
 			<artifactId>plugin-unstructured-storage-util</artifactId>
 			<version>${datax-project-version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-collections</artifactId>
+					<groupId>commons-collections</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -41,6 +47,11 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
             <version>16.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 	</dependencies>
 
